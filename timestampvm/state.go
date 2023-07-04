@@ -7,7 +7,7 @@ import (
 	"github.com/lasthyphen/dijetalgo/database"
 	"github.com/lasthyphen/dijetalgo/database/prefixdb"
 	"github.com/lasthyphen/dijetalgo/database/versiondb"
-	"github.com/lasthyphen/dijetalgo/vms/components/avax"
+	"github.com/lasthyphen/dijetalgo/vms/components/djtx"
 )
 
 var (
@@ -19,12 +19,12 @@ var (
 	_ State = &state{}
 )
 
-// State is a wrapper around avax.SingleTonState and BlockState
+// State is a wrapper around djtx.SingleTonState and BlockState
 // State also exposes a few methods needed for managing database commits and close.
 type State interface {
 	// SingletonState is defined in avalanchego,
 	// it is used to understand if db is initialized already.
-	avax.SingletonState
+	djtx.SingletonState
 	BlockState
 
 	Commit() error
@@ -32,7 +32,7 @@ type State interface {
 }
 
 type state struct {
-	avax.SingletonState
+	djtx.SingletonState
 	BlockState
 
 	baseDB *versiondb.Database
@@ -50,7 +50,7 @@ func NewState(db database.Database, vm *VM) State {
 	// return state with created sub state components
 	return &state{
 		BlockState:     NewBlockState(blockDB, vm),
-		SingletonState: avax.NewSingletonState(singletonDB),
+		SingletonState: djtx.NewSingletonState(singletonDB),
 		baseDB:         baseDB,
 	}
 }
